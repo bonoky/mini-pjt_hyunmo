@@ -41,8 +41,8 @@
 | 도구 | 기능 | 데이터 소스 | 외부 데이터 키 필요 |
 |---|---|---|---|
 | `search_papers` | 주제별 논문 검색(제목·초록·날짜·링크), 최대 10건 | arXiv API | ❌ |
-| `get_repo_stats` | 스타·포크·마지막 push·최신 릴리스·오픈 이슈 수 | GitHub REST API | ❌ (`GITHUB_TOKEN` 미설정 시 비인증 한도 시간당 60회 **[출처]** GitHub REST API rate limit 문서. 토큰을 서버 환경변수로 설정하면 인증 한도 적용 — `src/tools.py` `_get`) |
-| `get_package_info` | 최신 버전·릴리스 날짜·릴리스 이력 | PyPI JSON API | ❌ |
+| `get_repo_stats` | 스타·포크·마지막 push(+경과일)·최신 릴리스(+경과일)·오픈 이슈 수 | GitHub REST API | ❌ (`GITHUB_TOKEN` 미설정 시 비인증 한도 시간당 60회 **[출처]** GitHub REST API rate limit 문서. 토큰을 서버 환경변수로 설정하면 인증 한도 적용 — `src/tools.py` `_get`) |
+| `get_package_info` | 최신 버전·릴리스 날짜(+마지막 릴리스 경과일)·릴리스 이력·주기 | PyPI JSON API | ❌ |
 | `search_community` | 현업 반응·논쟁점(제목·포인트·댓글 수·링크), 기본 최근 365일 | Hacker News Algolia API | ❌ |
 
 **3-2. 파이프라인 단계 (LangGraph 노드, `src/agent.py` `build_graph`)**
@@ -50,9 +50,11 @@
 `guard_input → (차단 시 respond_blocked) → planner → researcher ⇄ tools(최대 2라운드, MAX_TOOL_ROUNDS=2) → retrieve → writer`
 
 - **retrieve** 는 LLM 이 호출하는 도구가 아니라 파이프라인 노드다(평가 trace 에는 `retrieve_docs` 단계로 기록됨). 동작(`src/retriever.py` `hybrid_search`, `src/agent.py` `retrieve`):
-  - 정형 지표 문서(kind="metric": 스타·버전 등)는 **검색 없이 전량** 근거에 포함한다.
+  - 정형 지표 문서(kind="metric": 스타·버전 등)는 **검색 없이 전량** 근거에 포함한다. 마지막 push·릴리스 경과일은 LLM 이 아니라 도구 안에서 조회일 기준 숫자로 계산해 넘긴다(`src/tools.py` `_days_since`).
   - 비정형 텍스트(kind="text": 논문 초록·HN 글/댓글)만 청킹(700자, 겹침 100자) 후 **BM25 + 임베딩 하이브리드 검색 → RRF 융합(RRF_K=60) → 다양성 필터(코드상 명칭: 다양성 리랭킹) — 문서당 최대 2청크(MAX_CHUNKS_PER_DOC=2) → 텍스트 청크 상위 5개(TEXT_TOP_K=5, 2차에서 8→5)** 를 고른다.
   - 별도 리랭커 모델(cross-encoder 등)과 벡터 저장소는 없다. 임베딩은 질의마다 메모리에서 계산하며, 임베딩 호출이 실패하면 **BM25 단독**으로 진행한다.
+  - 응답 시간 대응(3차, 피드백 반영): Titan 임베딩은 텍스트 1건당 API 1회라, 청크·검색어 임베딩을 **병렬 호출**(`EMBED_WORKERS=8`)하고 같은 텍스트는 프로세스 안에서 재사용한다. 텍스트 청크가 상위 k개 이하면 검색·임베딩을 **건너뛴다**. 검색 단계 소요 시간은 trace 의 `retrieve_docs` 출력 `elapsed_s` 에 기록된다.
+  - 측정: 같은 근거(캐시)로 `hybrid_search` 만 반복 실행했을 때 중앙값 비교 질의(#2, 청크 29개) 12.8초 → 2.9초, 논문 질의(#3, 청크 35개) 11.6초 → 1.5초 **[측정]** (5회, 간헐적으로 Bedrock 지연으로 15초 내외 이상치 발생). 전체 응답은 같은 날 1회 실행 기준 #2 62.2초 → 39.1초 **[측정]** 이나, LLM 응답 시간 편차가 커서 1회 수치이며 15건 전체 재평가는 아직 하지 않았다.
 - **writer** 는 근거 번호 `[n]` 으로 본문을 쓰고, 출처 목록은 LLM 이 아니라 시스템이 본문의 `[n]` 을 파싱해 생성한다(`src/agent.py` `_sources`).
 
 **3-3. 모델 의존성 (`src/config.py`)**
@@ -145,3 +147,7 @@ guardrail 항목은 `evaluation/test_queries.csv` 에서 검증하며, 현재 3�
 - 5-3 목표 대비 실측 갭 표(1·2차).
 - 6절 로드맵(5개 항목, 연결 지표만).
 - 5절 목표 수치는 원본과 동일하게 유지.
+
+**3차 (피드백 반영: 검색 단계 응답 시간·정형 지표)**
+- 3절: GitHub·PyPI 도구가 마지막 push·릴리스 경과일을 조회일 기준 숫자로 계산해 넘김(작성기에는 직접 계산 금지 지시).
+- 3절: 임베딩 병렬 호출·프로세스 내 재사용, 청크가 적으면 검색 생략, 검색 소요 시간 trace 기록. 측정치는 3-2 참고. 5-3 갭 표는 1·2차 평가 기준 그대로이며 3차 전체 재평가 전이다.

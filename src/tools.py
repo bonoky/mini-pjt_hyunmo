@@ -75,6 +75,20 @@ def _date(s: str | None) -> str:
     return (s or "")[:10]
 
 
+def _days_since(day: str | None, ref: str) -> int | None:
+    """[3차] 날짜(YYYY-MM-DD…)부터 기준일(조회일)까지 경과일을 도구 안에서 숫자로 계산.
+    LLM 이 날짜 차이를 직접 계산하다 틀리는 일을 없애고, 캐시 재사용 시에도 조회일 기준으로 일관되게 유지."""
+    try:
+        return (datetime.fromisoformat(ref[:10]) - datetime.fromisoformat(day[:10])).days
+    except (TypeError, ValueError):
+        return None
+
+
+def _ago(day: str | None, ref: str) -> str:
+    n = _days_since(day, ref)
+    return f"{n}일 전" if n is not None else "계산 불가"
+
+
 # ---------------------------------------------------------------- arXiv
 ATOM = {"a": "http://www.w3.org/2005/Atom"}
 
@@ -152,7 +166,7 @@ def get_repo_stats(repo: str):
         return f"[get_repo_stats] 조회 실패: {e}", []
     try:
         rel, _ = _get(f"https://api.github.com/repos/{full}/releases/latest")
-        release = f"{rel.get('tag_name')} ({_date(rel.get('published_at'))})"
+        release = f"{rel.get('tag_name')} ({_date(rel.get('published_at'))}, 조회일 기준 {_ago(rel.get('published_at'), fetched_at)})"
     except NotFound:
         release = "GitHub 릴리스 없음"
     except Exception:  # noqa: BLE001
@@ -162,7 +176,8 @@ def get_repo_stats(repo: str):
         f"[GitHub] {full}\n"
         f"- 설명: {r.get('description') or '-'}\n"
         f"- 스타: {r.get('stargazers_count'):,} · 포크: {r.get('forks_count'):,} · 오픈 이슈+PR: {r.get('open_issues_count'):,}\n"
-        f"- 생성일: {_date(r.get('created_at'))} · 마지막 push: {_date(r.get('pushed_at'))}\n"
+        f"- 생성일: {_date(r.get('created_at'))} · 마지막 push: {_date(r.get('pushed_at'))} "
+        f"(마지막 push 경과일: {_days_since(r.get('pushed_at'), fetched_at)}일, 조회일 기준)\n"
         f"- 최신 릴리스: {release}\n"
         f"- 라이선스: {(r.get('license') or {}).get('spdx_id') or '-'} · 보관(archived): {r.get('archived')}\n"
         f"- 조회일: {fetched_at} · 출처: {url}"
@@ -211,6 +226,7 @@ def get_package_info(package: str):
         f"[PyPI] {info['name']}\n"
         f"- 요약: {info.get('summary') or '-'}\n"
         f"- 최신 버전: {info['version']} · 필요 Python: {info.get('requires_python') or '-'}\n"
+        f"- 마지막 릴리스 경과일: {_days_since(releases[0][0], fetched_at) if releases else '-'}일 (조회일 기준)\n"
         f"- 최근 릴리스: " + ", ".join(f"{v}({d})" for d, v in recent) + "\n"
         f"- 릴리스 주기: {cadence} · 전체 릴리스 수: {len(releases)}\n"
         f"- 조회일: {fetched_at} · 출처: {url}"

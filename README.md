@@ -27,7 +27,8 @@ researcher ⇄ tools        search_papers     → arXiv
    │                       get_package_info  → PyPI JSON
    │                       search_community  → Hacker News Algolia
    │                       └ 외부 데이터 속 지시문 제거 (간접 인젝션 방어)
-retrieve_docs   정형 지표(GitHub·PyPI)는 전부 + 비정형 텍스트는 하이브리드 검색 top-5
+retrieve_docs   정형 지표(GitHub·PyPI, 경과일은 도구가 계산)는 그대로 전부 + 비정형 텍스트만 하이브리드 검색 top-5
+                (임베딩 병렬 호출 · 청크가 적으면 검색 생략)
    │
 writer          LCEL → Report(Pydantic) → 마크다운 → guard_output(근거 밖 링크 제거·재마스킹)
    │
@@ -106,8 +107,16 @@ curl -X POST localhost:8000/query -H "Content-Type: application/json" -d '{"ques
 - **라운드 상한 4→2 + 첫 라운드 병렬 호출** — 계획 단계에서 필요한 도구를 확정해 한 번에 부르고, 부족할 때만 1회 보충. → 평균 42.0초 → 34.2초
 - **top-k 8→5 + 근거 밖 일반론 금지 규칙** — 근거 정밀도를 우선. → context_precision 0.322 → 0.364
 
+### 3차: 피드백 반영 (코드의 `[3차]` 주석)
+> 피드백: "질의마다 청킹·임베딩·하이브리드 검색을 돌리면 30초 목표가 빠듯하니, 구조화된 값은 그대로 넘기고 마지막 push 경과일도 도구 안에서 숫자로 계산해 둘 것"
+
+- **원인 측정** — 검색 단계만 따로 재 보니 질의당 약 12초. Titan 임베딩이 텍스트 1건당 API 1회인데 청크 29~35개를 **순차 호출**하고 있었음
+- **임베딩 병렬 호출 + 재사용 + 생략** — 청크·검색어 임베딩을 한 번에 병렬 호출(`EMBED_WORKERS=8`), 같은 텍스트는 프로세스 안에서 재사용, 청크가 top-k 이하면 검색 자체를 건너뜀. 선택되는 청크는 변경 전과 동일 → 검색 단계 중앙값 12.8초 → 2.9초(#2), 11.6초 → 1.5초(#3)
+- **경과일을 도구에서 계산** — `get_repo_stats` 는 마지막 push·최신 릴리스 경과일, `get_package_info` 는 마지막 릴리스 경과일을 조회일 기준 숫자로 계산(`_days_since`). 스타·날짜 같은 정형 값은 원래대로 검색 없이 그대로 전달하고, 작성기에는 경과일을 직접 계산하지 말라고 지시
+- **결과** — 같은 날 1회 실행 기준 비교 질의(#2) 62.2초 → 39.1초, 논문 동향(#3) 35.2초. 15건 전체 재평가는 아직 하지 않았음
+
 ### 남은 한계 · 향후 개선 방향
-- **응답 시간 목표(30초) 미달**: 평균 34.2초, 다중 대상 비교(#11 97.7초)·논문 동향(#3 88.1초)이 길다. 작성기의 긴 구조화 출력 비중이 큼 → 스트리밍 응답·작성기 모델 경량화. 캐시 적중이 섞인 수치라 콜드 상태는 더 느릴 수 있음
+- **응답 시간 목표(30초) 미달**: 2차 평균 34.2초, 다중 대상 비교(#11 97.7초)·논문 동향(#3 88.1초)이 길다. 3차에서 검색 단계를 줄였지만, 남은 시간 대부분은 작성기의 긴 구조화 출력 → 스트리밍 응답·작성기 모델 경량화. 캐시 적중이 섞인 수치라 콜드 상태는 더 느릴 수 있음
 - **RAGAS 목표 미달**: faithfulness 0.579 정체, answer_relevancy 0.543 → 0.512 하락, context_precision 0.364 → 관련도 리랭커(cross-encoder) 도입, 케이스별 RAGAS 분석 후 작성기 프롬프트 개선
 - **평가 신뢰도**: Judge·RAGAS 가 에이전트와 같은 모델, RAGAS reference 를 `expected_traits` 로 대체, 2차 15/15 는 1차 실패를 보고 고친 같은 15건(held-out 없음) → 정답 요지 확보, 더 어려운 edge·guardrail 케이스와 held-out 세트 추가
 - **데이터 신선도**: 디스크 캐시에 만료가 없어 조회일이 최초 수집일로 고정 → 캐시 TTL 도입
@@ -117,8 +126,8 @@ curl -X POST localhost:8000/query -H "Content-Type: application/json" -d '{"ques
 
 ## 핵심 코드 위치
 - `src/agent.py:341` — 메인 에이전트 그래프 (`build_graph`) · 노드: `guard_input:116` · `planner:176` · `researcher:202` · `retrieve:242` · `writer:311` · 출처 생성 `_sources:284` · 진입점 `run_agent:364`
-- `src/tools.py` — 도메인 도구 4종 `search_papers:83` · `get_repo_stats:140` · `get_package_info:184` · `search_community:232` + 캐시·재시도 `_get:36`
-- `src/retriever.py:51` — 하이브리드 RAG 파이프라인 (`hybrid_search`)
+- `src/tools.py` — 도메인 도구 4종 `search_papers:97` · `get_repo_stats:154` · `get_package_info:199` · `search_community:248` + 캐시·재시도 `_get:36` · 경과일 계산 `_days_since:78`
+- `src/retriever.py:80` — 하이브리드 RAG 파이프라인 (`hybrid_search`) · 병렬 임베딩 `_embed_all:28`
 - `src/guardrails.py` — 마스킹 `mask_secrets:50` · 간접 인젝션 정화 `sanitize_external:63` · 출력 검증 `verify_output:78`
 - `src/server.py:43` — `POST /query` API
 - `evaluation/run_eval.py:102` — LLM-as-Judge(`judge:54`) + RAGAS(`run_ragas:75`) 평가, 라운드 리포트 생성(`write_report:150`)
