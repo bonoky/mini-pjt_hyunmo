@@ -1,0 +1,120 @@
+{
+  "answer": "LangGraph와 CrewAI는 모두 AI 에이전트 프레임워크로, 2026년 11월 24일 조회 기준 GitHub에서 활발히 개발되고 있습니다[1][2]. CrewAI는 역할 기반 협업 에이전트 오케스트레이션에 초점을 맞추고 있으며, LangGraph는 상태 기반 멀티 액터 애플리케이션 구축을 지원합니다[2][3]. 두 프레임워크 모두 MIT 라이선스이며, 개발자 커뮤니티에서 프로덕션 오케스트레이션 도구로 언급되고 있습니다[8].\n\n### 근거 지표\n| 지표 | LangGraph | CrewAI |\n|------|-----------|--------|\n| **GitHub 스타** (2026-11-24) | 45,329 | 61,216 |\n| **포크** (2026-11-24) | 7,839 | 9,265 |\n| **오픈 이슈+PR** (2026-11-24) | 487 | 1,273 |\n| **생성일** | 2023-08-09 | 2023-10-27 |\n| **마지막 push** (2026-11-24) | 2026-11-24 | 2026-11-24 |\n| **최신 릴리스** | 1.2.24 (2026-11-20) | 1.15.45 (2026-11-24) |\n| **릴리스 주기** (최근 7회 중앙값) | 4일 | 1일 |\n| **전체 릴리스 수** | 279 | 518 |\n| **필요 Python 버전** | >=3.10 | >=3.10, <3.14 |\n| **라이선스** | MIT | MIT |\n\n### 실무 판단\n**인기도 및 커뮤니티**: CrewAI가 GitHub 스타 61,216개로 LangGraph(45,329개)보다 약 35% 더 많은 스타를 보유하고 있습니다[1][2]. 포크 수도 CrewAI가 9,265개로 LangGraph(7,839개)보다 많아 커뮤니티 규모가 더 큽니다[1][2].\n\n**개발 활성도**: 두 프레임워크 모두 2026년 11월 24일까지 활발히 업데이트되고 있습니다[1][2]. CrewAI는 릴리스 주기가 중앙값 1일로 매우 빠르며 전체 518개 릴리스를 기록한 반면, LangGraph는 중앙값 4일 주기로 279개 릴리스를 배포했습니다[3][4]. CrewAI의 오픈 이슈+PR이 1,273개로 LangGraph(487개)보다 많은데, 이는 더 큰 사용자 기반과 활발한 피드백을 반영할 수 있지만 저장소 규모와 함께 해석해야 합니다[1][2].\n\n**기술적 포지셔닝**: LangGraph는 \"상태 기반, 멀티 액터 애플리케이션 구축\"을 강조하며[3], Hacker News에서 복잡한 그래프 구조의 유지보수성과 아키텍처 패턴이 논의되었습니다[6]. CrewAI는 \"역할 기반 협업 에이전트 오케스트레이션\"에 초점을 맞추고 있으며[4], 프로덕션 LLM 오케스트레이션 도구로 LangGraph와 함께 언급되었습니다[8].\n\n**선택 기준**: \n- 역할 기반 협업 에이전트와 빠른 반복 개발이 필요하면 CrewAI를 고려하세요(릴리스 주기 1일, 더 큰 커뮤니티)[2][4].\n- 상태 관리가 중요한 복잡한 멀티 액터 시스템이나 LangChain 생태계 통합이 필요하면 LangGraph를 고려하세요(langchain-ai 조직 소속)[1][3].\n- 두 프레임워크 모두 MIT 라이선스로 상용 사용이 가능하며, Python 3.10 이상을 요구합니다[1][2][3][4].\n\n### 주의할 점\n- 오픈 이슈+PR 수는 저장소 규모와 사용자 기반에 따라 달라지므로, 단독으로 품질 지표로 해석하기 어렵습니다.\n- 릴리스 주기가 짧다고 반드시 안정성이 높거나 낮은 것은 아니며, 개발 철학과 버전 관리 전략의 차이일 수 있습니다.\n- Hacker News 검색 결과는 제한적이며(LangGraph 3건, CrewAI 2건 언급), 전체 개발자 커뮤니티 평가를 대표하지 않습니다.\n- PyPI 다운로드 수 데이터가 근거에 포함되지 않아 실제 사용량 비교는 확인되지 않았습니다.\n- 두 프레임워크의 구체적인 기능 차이, 성능 벤치마크, 학습 곡선 비교는 근거에서 확인되지 않았습니다.\n- 프로덕션 사례나 엔터프라이즈 지원 수준에 대한 구체적인 정보는 근거에 포함되지 않았습니다.\n\n### 출처 (2026-11-26 조회)\n- [1] [GitHub langchain-ai/langgraph](https://github.com/langchain-ai/langgraph)\n- [2] [GitHub joaomdmoura/crewAI](https://github.com/crewAIInc/crewAI)\n- [3] [PyPI langgraph](https://pypi.org/project/langgraph/)\n- [4] [PyPI crewai](https://pypi.org/project/crewai/)\n- [6] [Show HN: LangGraph architecture that scales (hexagonal pattern, 110 tests)](https://news.ycombinator.com/item?id=46689093)\n- [8] [Ask HN: How are you using LLMs in production?](https://news.ycombinator.com/item?id=47791832)",
+  "contexts": [
+    {
+      "doc_id": "github:langchain-ai/langgraph",
+      "url": "https://github.com/langchain-ai/langgraph",
+      "text": "[GitHub] langchain-ai/langgraph\n- 설명: Build resilient agents.\n- 스타: 45,329 · 포크: 7,839 · 오픈 이슈+PR: 487\n- 생성일: 2023-08-09 · 마지막 push: 2026-11-24\n- 최신 릴리스: 1.2.24 (2026-11-20)\n- 라이선스: MIT · 보관(archived): False\n- 조회일: 2026-11-24 · 출처: https://github.com/langchain-ai/langgraph"
+    },
+    {
+      "doc_id": "github:joaomdmoura/crewAI",
+      "url": "https://github.com/crewAIInc/crewAI",
+      "text": "[GitHub] joaomdmoura/crewAI\n- 설명: Framework for orchestrating role-playing, autonomous AI agents. By fostering collaborative intelligence, CrewAI empowers agents to work together seamlessly, tackling complex tasks.\n- 스타: 61,216 · 포크: 9,265 · 오픈 이슈+PR: 1,273\n- 생성일: 2023-10-27 · 마지막 push: 2026-11-24\n- 최신 릴리스: 1.15.45 (2026-11-24)\n- 라이선스: MIT · 보관(archived): False\n- 조회일: 2026-11-24 · 출처: https://github.com/crewAIInc/crewAI"
+    },
+    {
+      "doc_id": "pypi:langgraph",
+      "url": "https://pypi.org/project/langgraph/",
+      "text": "[PyPI] langgraph\n- 요약: Building stateful, multi-actor applications with LLMs\n- 최신 버전: 1.2.24 · 필요 Python: >=3.10\n- 최근 릴리스: 1.2.24(2026-11-20), 1.2.23(2026-11-19), 1.2.22(2026-11-14), 1.2.21(2026-11-12), 1.2.20(2026-11-05), 1.2.19(2026-10-30), 1.2.18(2026-10-26), 1.2.17(2026-10-24)\n- 릴리스 주기: 최근 7회 간격 중앙값 4일 · 전체 릴리스 수: 279\n- 조회일: 2026-11-24 · 출처: https://pypi.org/project/langgraph/"
+    },
+    {
+      "doc_id": "pypi:crewai",
+      "url": "https://pypi.org/project/crewai/",
+      "text": "[PyPI] crewai\n- 요약: Cutting-edge framework for orchestrating role-playing, autonomous AI agents. By fostering collaborative intelligence, CrewAI empowers agents to work together seamlessly, tackling complex tasks.\n- 최신 버전: 1.15.45 · 필요 Python: <3.14,>=3.10\n- 최근 릴리스: 1.15.45(2026-11-24), 1.15.44.dev20261123(2026-11-23), 1.15.44.dev20261121(2026-11-21), 1.15.44.dev20261120(2026-11-20), 1.15.44(2026-11-19), 1.15.43.dev20261119(2026-11-19), 1.15.43(2026-11-19), 1.15.42(2026-11-18)\n- 릴리스 주기: 최근 7회 간격 중앙값 1일 · 전체 릴리스 수: 518\n- 조회일: 2026-11-24 · 출처: https://pypi.org/project/crewai/"
+    },
+    {
+      "doc_id": "hn:47376584#0",
+      "url": "https://news.ycombinator.com/item?id=47376584",
+      "text": "[HN] Show HN: GitAgent – An open standard that turns any Git repo into an AI agent (작성 2026-03-14, 147점, 댓글 39개)\nWe built GitAgent because we kept seeing the same problem: every agent framework defines agents differently, and switching frameworks means rewriting everything.\nGitAgent is a spec that defines an AI agent as files in a git repo.\nThree core files — agent.yaml (config), SOUL.md (personality/instructions), and SKILL.md (capabilities) — and you get a portable agent definition that exports to Claude Code, OpenAI Agents SDK, CrewAI, Google ADK, LangChain, and others.\nWhat you get for free by being git-native:\n1. Version control for agent behavior (roll back a bad prompt like you'd reve"
+    },
+    {
+      "doc_id": "hn:46689093#0",
+      "url": "https://news.ycombinator.com/item?id=46689093",
+      "text": "[HN] Show HN: LangGraph architecture that scales (hexagonal pattern, 110 tests) (작성 2026-01-20, 12점, 댓글 2개)\nI kept hitting the same wall with LangGraph: tutorials show you how to build a graph, not how to maintain one when you have 8 nodes, 3 agents, and shared state across subgraphs.\nSo I built a reference architecture with:\n- Platform layer separation (framework-independent core)\n- Contract validation on every state mutation  \n- 110 tests including architecture boundary enforcement\n- Patterns that AI coding agents can't accidentally break\nRepo: https://github.com/cleverhoods/sagecompass\nWrote about the patterns: https://dev.to/cleverhoods/from-prompt-to-platform-architect...\nIt's MIT licen"
+    },
+    {
+      "doc_id": "hn:50622623#0",
+      "url": "https://news.ycombinator.com/item?id=50622623",
+      "text": "[HN] Show HN: Agent-first-browse – Web automation with delta snapshots and LangGraph (작성 2026-11-24, 9점, 댓글 0개)"
+    },
+    {
+      "doc_id": "hn:47791832#0",
+      "url": "https://news.ycombinator.com/item?id=47791832",
+      "text": "[HN] Ask HN: How are you using LLMs in production? (작성 2026-04-16, 14점, 댓글 12개)\nI’m curious how people are leveraging LLMs in production. We’re all familiar with using them to write code through your IDE, or agent, etc… but what applications have you built that use LLMs as part of the functionality?\n    - What applications/industries have you found them to be the most useful in?\n    - What tools do you use for orchestration? LangGraph/CrewAI/built your own/etc?\n    - What models? Centralized or locally deployed?\n· We are not. We are still making money and providing payslips for real humans. We are doing fine\n· I'm a full-stack software dev, proficient in AI but also sceptical. I've found tha"
+    },
+    {
+      "doc_id": "hn:47376584#1",
+      "url": "https://news.ycombinator.com/item?id=47376584",
+      "text": "[HN] Show HN: GitAgent – An open standard that turns any Git repo into an AI agent (작성 2026-03-14, 147점, 댓글 39개)\n…e by being git-native:\n1. Version control for agent behavior (roll back a bad prompt like you'd revert a bad commit)\n2. Branching for environment promotion (dev → staging → main)\n3. Human-in-the-loop via PRs (agent learns a skill → opens a branch → human reviews before merge)\n4. Audit trail via git blame and git\n· We do something similar at work, called metadev. It sits above all repos and git submodules othe repos in, and works with multiple changes with multiple sessions with worktrees, and stores long term knowledge in /learnings. Our trick has been to put domain specific prompts in the submodules, and developer process in metadev. Because of the way Claude hierarchically includes context"
+    }
+  ],
+  "trace": [
+    {
+      "step": "guard_input",
+      "input": "LangGraph vs CrewAI 비교해줘",
+      "output": "{\"route\": \"research\", \"reason\": \"LangGraph와 CrewAI라는 두 가지 구체적인 AI 에이전트 프레임워크의 비교를 요청하는 명확한 기술 리서치 요청입니다.\", \"clarify_options\": [], \"regex_injection\": []}"
+    },
+    {
+      "step": "planner",
+      "input": "LangGraph vs CrewAI 비교해줘",
+      "output": "{\"intent\": \"compare\", \"targets\": [\"langgraph\", \"crewai\"], \"search_terms\": [\"LangGraph\", \"CrewAI\", \"agent framework\", \"multi-agent\"], \"steps\": [\"GitHub 저장소 통계로 인기도·활성도·커뮤니티 규모 비교\", \"PyPI 패키지 정보로 최신 릴리스·다운로드 수 확인\", \"Hacker News 검색으로 개발자 커뮤니티 반응·평가 조사\"]}"
+    },
+    {
+      "step": "researcher",
+      "input": "round 0",
+      "output": "[{\"name\": \"get_repo_stats\", \"args\": {\"repo\": \"langchain-ai/langgraph\"}}, {\"name\": \"get_repo_stats\", \"args\": {\"repo\": \"joaomdmoura/crewAI\"}}, {\"name\": \"get_package_info\", \"args\": {\"package\": \"langgraph\"}}, {\"name\": \"get_package_info\", \"args\": {\"package\": \"crewai\"}}, {\"name\": \"search_community\", \"args\": {\"query\": \"LangGraph\", \"days\": 365}}, {\"name\": \"search_community\", \"args\": {\"query\": \"CrewAI\", \"days\": 365}}]"
+    },
+    {
+      "step": "get_repo_stats",
+      "input": "{\"repo\": \"langchain-ai/langgraph\"}",
+      "output": "[GitHub] langchain-ai/langgraph\n- 설명: Build resilient agents.\n- 스타: 45,329 · 포크: 7,839 · 오픈 이슈+PR: 487\n- 생성일: 2023-08-09 · 마지막 push: 2026-11-24\n- 최신 릴리스: 1.2.24 (2026-11-20)\n- 라이선스: MIT · 보관(archived): False\n- 조회일: 2026-11-24 · 출처: https://github.com/langchain-ai/langgraph"
+    },
+    {
+      "step": "get_repo_stats",
+      "input": "{\"repo\": \"joaomdmoura/crewAI\"}",
+      "output": "[GitHub] joaomdmoura/crewAI\n- 설명: Framework for orchestrating role-playing, autonomous AI agents. By fostering collaborative intelligence, CrewAI empowers agents to work together seamlessly, tackling complex tasks.\n- 스타: 61,216 · 포크: 9,265 · 오픈 이슈+PR: 1,273\n- 생성일: 2023-10-27 · 마지막 push: 2026-11-24\n- 최신 릴리스: 1.15.45 (2026-11-24)\n- 라이선스: MIT · 보관(archived): False\n- 조회일: 2026-11-24 · 출처: https://github.com/crewAIInc/crewAI"
+    },
+    {
+      "step": "get_package_info",
+      "input": "{\"package\": \"langgraph\"}",
+      "output": "[PyPI] langgraph\n- 요약: Building stateful, multi-actor applications with LLMs\n- 최신 버전: 1.2.24 · 필요 Python: >=3.10\n- 최근 릴리스: 1.2.24(2026-11-20), 1.2.23(2026-11-19), 1.2.22(2026-11-14), 1.2.21(2026-11-12), 1.2.20(2026-11-05), 1.2.19(2026-10-30), 1.2.18(2026-10-26), 1.2.17(2026-10-24)\n- 릴리스 주기: 최근 7회 간격 중앙값 4일 · 전체 릴리스 수: 279\n- 조회일: 2026-11-24 · 출처: https://pypi.org/project/langgraph/"
+    },
+    {
+      "step": "get_package_info",
+      "input": "{\"package\": \"crewai\"}",
+      "output": "[PyPI] crewai\n- 요약: Cutting-edge framework for orchestrating role-playing, autonomous AI agents. By fostering collaborative intelligence, CrewAI empowers agents to work together seamlessly, tackling complex tasks.\n- 최신 버전: 1.15.45 · 필요 Python: <3.14,>=3.10\n- 최근 릴리스: 1.15.45(2026-11-24), 1.15.44.dev20261123(2026-11-23), 1.15.44.dev20261121(2026-11-21), 1.15.44.dev20261120(2026-11-20), 1.15.44(2026-11-19), 1.15.43.dev20261119(2026-11-19), 1.15.43(2026-11-19), 1.15.42(2026-11-18)\n- 릴리스 주기: 최근 7회 간격 중앙값 1일 · 전체 릴리스 수: 518\n- 조회일: 2026-11-24 · 출처: https://pypi.org/project/crewai/"
+    },
+    {
+      "step": "search_community",
+      "input": "{\"query\": \"LangGraph\", \"days\": 365}",
+      "output": "[search_community] 'LangGraph' 글 6건 (조회일 2026-11-26)\n- Comparing Fable and 10 other LLMs on refactoring a LangGraph god node | 47점 · 댓글 20 | 2026-07-02 | https://news.ycombinator.com/item?id=48761132\n- Show HN: I Built LangGraph for Swift | 25점 · 댓글 4 | 2026-07-06 | https://news.ycombinator.com/item?id=48805437\n- Building a LangGraph pipeline for production data engineering | 13점 · 댓글 0 | 2026-05-31 | https://news.ycombinator.com/item?id=48343061\n- Show HN: LangGraph architecture that scales (hexagonal pattern, 110 tests) | 12점 · 댓글 2 | 2026-01-20 | https://news.ycombinator.com/item?id=46689093\n- Show HN: Agent-first-browse – Web automation with delta snapshots and LangGraph | 9점 · 댓글 0 | 2026-11-24 | https://news.ycombinator.com/item?id=50622623\n- Show HN: Librarian – Cut token costs by u"
+    },
+    {
+      "step": "search_community",
+      "input": "{\"query\": \"CrewAI\", \"days\": 365}",
+      "output": "[search_community] 'CrewAI' 글 6건 (조회일 2026-11-26)\n- Show HN: GitAgent – An open standard that turns any Git repo into an AI agent | 147점 · 댓글 39 | 2026-03-14 | https://news.ycombinator.com/item?id=47376584\n- Show HN: Klaw.sh – Kubernetes for AI agents | 60점 · 댓글 43 | 2026-02-15 | https://news.ycombinator.com/item?id=47025478\n- Ask HN: How are you using LLMs in production? | 14점 · 댓글 12 | 2026-04-16 | https://news.ycombinator.com/item?id=47791832\n- Show HN: Remembrane – agent memory in one SQLite file, zero dependencies | 13점 · 댓글 0 | 2026-08-07 | https://news.ycombinator.com/item?id=49207194\n- Show HN: I built a database for AI agents | 12점 · 댓글 10 | 2026-04-07 | https://news.ycombinator.com/item?id=47678048\n- Does anyone use CrewAI or LangChain anymore? | 11점 · 댓글 5 | 2026-02-24 | https:/"
+    },
+    {
+      "step": "researcher",
+      "input": "round 1",
+      "output": "수집 완료"
+    },
+    {
+      "step": "retrieve_docs",
+      "input": "[\"LangGraph vs CrewAI 비교해줘\", \"LangGraph\", \"CrewAI\", \"agent framework\", \"multi-agent\"]",
+      "output": "{\"metric_docs\": 4, \"text_docs\": 12, \"chunks\": 29, \"dense\": true, \"selected\": [\"github:langchain-ai/langgraph\", \"github:joaomdmoura/crewAI\", \"pypi:langgraph\", \"pypi:crewai\", \"hn:47376584#0\", \"hn:46689093#0\", \"hn:50622623#0\", \"hn:47791832#0\", \"hn:47376584#1\"]}"
+    },
+    {
+      "step": "writer",
+      "input": "9 contexts",
+      "output": "{\"summary\": \"LangGraph와 CrewAI는 모두 AI 에이전트 프레임워크로, 2026년 11월 24일 조회 기준 GitHub에서 활발히 개발되고 있습니다[1][2]. CrewAI는 역할 기반 협업 에이전트 오케스트레이션에 초점을 맞추고 있으며, LangGraph는 상태 기반 멀티 액터 애플리케이션 구축을 지원합니다[2][3]. 두 프레임워크 모두 MIT 라이선스이며, 개발자 커뮤니티에서 프로덕션 오케스트레이션 도구로 언급되고 있습니다[8].\", \"metrics_table\": \"| 지표 | LangGraph | CrewAI |\\n|------|-----------|--------|\\n| **GitHub 스타** (2026-11-24) | 45,329 | 61,216 |\\n| **포크** (2026-11-24) | 7,839 | 9,265 |\\n| **오픈 이슈+PR** (2026-11-24) | 487 | 1,273 |\\n| **생성일** | 2023-08-09 | 2023-10-27 |\\n| **마지막 push** (2026-11-24) | 2026-11-24 | 2026-11-24 |\\n| **최신 릴리스** | 1.2.24 (2026-11-20) | 1.15.45 (2026-11-24) |\\n| **릴리스 주기** (최근 7회 중앙값) | 4일 | 1일 |\\n| **전체 릴리스 수** | 279 | 518 |\\n| **필요 Python 버전** | >=3.10 | >=3.10, <3.14 |\\n| **라이선스** | MIT | MIT |\", \"assessment\": \"**인기도 및 커뮤니티*"
+    },
+    {
+      "step": "guard_output",
+      "input": "verify",
+      "output": "ok"
+    }
+  ],
+  "_question": "LangGraph vs CrewAI 비교해줘",
+  "_elapsed": 62.2,
+  "_status": 200
+}

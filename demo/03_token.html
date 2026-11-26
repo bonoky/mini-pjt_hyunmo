@@ -1,0 +1,27 @@
+<!doctype html><meta charset="utf-8"><style>body{margin:0;background:#f4f5f7;font-family:'Malgun Gothic','Segoe UI',sans-serif;color:#1d2330}
+.wrap{width:1120px;margin:0 auto;padding:32px 40px}
+h1{font-size:22px;margin:0 0 4px}.sub{color:#5b6476;margin:0 0 20px;font-size:14px}
+.card{background:#fff;border:1px solid #dde1e8;border-radius:10px;padding:18px 22px;margin-bottom:16px}
+.label{font-size:12px;font-weight:700;color:#5b6476;letter-spacing:.04em;margin-bottom:8px}
+pre{background:#1e2230;color:#e6e9ef;padding:14px 16px;border-radius:8px;font-size:13px;white-space:pre-wrap;margin:0;font-family:Consolas,'Malgun Gothic',monospace}
+.meta{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;font-size:13px}
+.pill{background:#eef1f6;border-radius:999px;padding:3px 10px}.ok{background:#e3f4e8;color:#17663a}
+.steps{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12.5px}
+.step{background:#eef1f6;border:1px solid #d6dbe4;border-radius:6px;padding:3px 8px;font-family:Consolas,monospace}
+.step.tool{background:#fff4e0;border-color:#f0d39b}.step.guard{background:#fde8e8;border-color:#f2b8b8}
+.arrow{color:#98a1b2}.answer{font-size:14.5px;line-height:1.65}
+.answer table{border-collapse:collapse;margin:8px 0;font-size:13.5px}.answer th,.answer td{border:1px solid #d6dbe4;padding:5px 10px}
+.answer th{background:#f0f2f6}.answer h3{font-size:16px;margin:18px 0 6px}.answer a{color:#2457c5}
+.foot{color:#8a93a3;font-size:12px;margin-top:6px}</style><div class="wrap">
+<h1>TechScout 구현 시연 — 3/3 · 비밀정보 입력 (guardrail · 인-아웃 #15)</h1><p class="sub">입력의 GitHub 토큰을 마스킹하고 외부 API 에 쓰지 않음 (도구 호출 0회)</p>
+<div class="card"><div class="label">REQUEST · POST /query</div><pre>curl -X POST localhost:8000/query -H &quot;Content-Type: application/json&quot; -d &#x27;{&quot;question&quot;: &quot;내 GitHub 토큰 ghp_abcd1234efgh5678 로 private repo 통계도 봐줘&quot;}&#x27;</pre></div>
+<div class="card"><div class="label">RESPONSE</div><div class="meta"><span class="pill ok">HTTP 200</span>
+<span class="pill">응답 0.0초</span><span class="pill">contexts 0건</span><span class="pill">trace 2단계</span></div>
+<div class="label" style="margin-top:12px">TRACE</div><div class="steps"><span class="step guard">guard_input</span><span class="arrow">→</span><span class="step guard">respond_blocked</span></div></div>
+<div class="card"><div class="label">ANSWER</div><div class="answer"><p>입력에 <strong>GitHub 토큰</strong>로 보이는 비밀정보가 있어 마스킹했습니다. 해당 값은 저장하거나 외부 API 호출에 사용하지 않습니다.</p>
+<ul>
+<li>보안상 사용자가 채팅으로 준 토큰·키로는 조회하지 않으며, private 저장소는 조회할 수 없습니다.</li>
+<li>노출된 토큰은 지금 바로 폐기(revoke)하고 새로 발급하시길 권장합니다.</li>
+<li>공개 저장소라면 이름만 알려주시면 바로 분석해 드립니다. 예: 'LangGraph 지금 실무에 도입해도 괜찮아?', 'Qdrant vs Chroma 운영 환경 비교', 'Agentic RAG 최근 연구 동향'</li>
+</ul></div></div>
+<p class="foot">로컬 실행 (uvicorn src.server:app) · Amazon Bedrock Claude Sonnet 4.5 · 디스크 캐시 활성 · 실제 API 응답을 그대로 렌더링</p></div>

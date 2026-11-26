@@ -1,0 +1,112 @@
+<!doctype html><meta charset="utf-8"><style>body{margin:0;background:#f4f5f7;font-family:'Malgun Gothic','Segoe UI',sans-serif;color:#1d2330}
+.wrap{width:1120px;margin:0 auto;padding:32px 40px}
+h1{font-size:22px;margin:0 0 4px}.sub{color:#5b6476;margin:0 0 20px;font-size:14px}
+.card{background:#fff;border:1px solid #dde1e8;border-radius:10px;padding:18px 22px;margin-bottom:16px}
+.label{font-size:12px;font-weight:700;color:#5b6476;letter-spacing:.04em;margin-bottom:8px}
+pre{background:#1e2230;color:#e6e9ef;padding:14px 16px;border-radius:8px;font-size:13px;white-space:pre-wrap;margin:0;font-family:Consolas,'Malgun Gothic',monospace}
+.meta{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;font-size:13px}
+.pill{background:#eef1f6;border-radius:999px;padding:3px 10px}.ok{background:#e3f4e8;color:#17663a}
+.steps{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12.5px}
+.step{background:#eef1f6;border:1px solid #d6dbe4;border-radius:6px;padding:3px 8px;font-family:Consolas,monospace}
+.step.tool{background:#fff4e0;border-color:#f0d39b}.step.guard{background:#fde8e8;border-color:#f2b8b8}
+.arrow{color:#98a1b2}.answer{font-size:14.5px;line-height:1.65}
+.answer table{border-collapse:collapse;margin:8px 0;font-size:13.5px}.answer th,.answer td{border:1px solid #d6dbe4;padding:5px 10px}
+.answer th{background:#f0f2f6}.answer h3{font-size:16px;margin:18px 0 6px}.answer a{color:#2457c5}
+.foot{color:#8a93a3;font-size:12px;margin-top:6px}</style><div class="wrap">
+<h1>TechScout 구현 시연 — 1/3 · 비교 질의 (positive · 인-아웃 #2)</h1><p class="sub">도구 4종 중 GitHub·PyPI·HN 병렬 호출 → 하이브리드 검색 → 정량 비교 표 + 조건부 권고, 출처 번호는 시스템이 생성</p>
+<div class="card"><div class="label">REQUEST · POST /query</div><pre>curl -X POST localhost:8000/query -H &quot;Content-Type: application/json&quot; -d &#x27;{&quot;question&quot;: &quot;LangGraph vs CrewAI 비교해줘&quot;}&#x27;</pre></div>
+<div class="card"><div class="label">RESPONSE</div><div class="meta"><span class="pill ok">HTTP 200</span>
+<span class="pill">응답 62.2초</span><span class="pill">contexts 9건</span><span class="pill">trace 13단계</span></div>
+<div class="label" style="margin-top:12px">TRACE</div><div class="steps"><span class="step guard">guard_input</span><span class="arrow">→</span><span class="step">planner</span><span class="arrow">→</span><span class="step">researcher</span><span class="arrow">→</span><span class="step tool">get_repo_stats</span><span class="arrow">→</span><span class="step tool">get_repo_stats</span><span class="arrow">→</span><span class="step tool">get_package_info</span><span class="arrow">→</span><span class="step tool">get_package_info</span><span class="arrow">→</span><span class="step tool">search_community</span><span class="arrow">→</span><span class="step tool">search_community</span><span class="arrow">→</span><span class="step">researcher</span><span class="arrow">→</span><span class="step">retrieve_docs</span><span class="arrow">→</span><span class="step">writer</span><span class="arrow">→</span><span class="step guard">guard_output</span></div></div>
+<div class="card"><div class="label">ANSWER</div><div class="answer"><p>LangGraph와 CrewAI는 모두 AI 에이전트 프레임워크로, 2026년 11월 24일 조회 기준 GitHub에서 활발히 개발되고 있습니다[1][2]. CrewAI는 역할 기반 협업 에이전트 오케스트레이션에 초점을 맞추고 있으며, LangGraph는 상태 기반 멀티 액터 애플리케이션 구축을 지원합니다[2][3]. 두 프레임워크 모두 MIT 라이선스이며, 개발자 커뮤니티에서 프로덕션 오케스트레이션 도구로 언급되고 있습니다[8].</p>
+<h3>근거 지표</h3>
+<table>
+<thead>
+<tr>
+<th>지표</th>
+<th>LangGraph</th>
+<th>CrewAI</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>GitHub 스타</strong> (2026-11-24)</td>
+<td>45,329</td>
+<td>61,216</td>
+</tr>
+<tr>
+<td><strong>포크</strong> (2026-11-24)</td>
+<td>7,839</td>
+<td>9,265</td>
+</tr>
+<tr>
+<td><strong>오픈 이슈+PR</strong> (2026-11-24)</td>
+<td>487</td>
+<td>1,273</td>
+</tr>
+<tr>
+<td><strong>생성일</strong></td>
+<td>2023-08-09</td>
+<td>2023-10-27</td>
+</tr>
+<tr>
+<td><strong>마지막 push</strong> (2026-11-24)</td>
+<td>2026-11-24</td>
+<td>2026-11-24</td>
+</tr>
+<tr>
+<td><strong>최신 릴리스</strong></td>
+<td>1.2.24 (2026-11-20)</td>
+<td>1.15.45 (2026-11-24)</td>
+</tr>
+<tr>
+<td><strong>릴리스 주기</strong> (최근 7회 중앙값)</td>
+<td>4일</td>
+<td>1일</td>
+</tr>
+<tr>
+<td><strong>전체 릴리스 수</strong></td>
+<td>279</td>
+<td>518</td>
+</tr>
+<tr>
+<td><strong>필요 Python 버전</strong></td>
+<td>&gt;=3.10</td>
+<td>&gt;=3.10, &lt;3.14</td>
+</tr>
+<tr>
+<td><strong>라이선스</strong></td>
+<td>MIT</td>
+<td>MIT</td>
+</tr>
+</tbody>
+</table>
+<h3>실무 판단</h3>
+<p><strong>인기도 및 커뮤니티</strong>: CrewAI가 GitHub 스타 61,216개로 LangGraph(45,329개)보다 약 35% 더 많은 스타를 보유하고 있습니다[1][2]. 포크 수도 CrewAI가 9,265개로 LangGraph(7,839개)보다 많아 커뮤니티 규모가 더 큽니다[1][2].</p>
+<p><strong>개발 활성도</strong>: 두 프레임워크 모두 2026년 11월 24일까지 활발히 업데이트되고 있습니다[1][2]. CrewAI는 릴리스 주기가 중앙값 1일로 매우 빠르며 전체 518개 릴리스를 기록한 반면, LangGraph는 중앙값 4일 주기로 279개 릴리스를 배포했습니다[3][4]. CrewAI의 오픈 이슈+PR이 1,273개로 LangGraph(487개)보다 많은데, 이는 더 큰 사용자 기반과 활발한 피드백을 반영할 수 있지만 저장소 규모와 함께 해석해야 합니다[1][2].</p>
+<p><strong>기술적 포지셔닝</strong>: LangGraph는 "상태 기반, 멀티 액터 애플리케이션 구축"을 강조하며[3], Hacker News에서 복잡한 그래프 구조의 유지보수성과 아키텍처 패턴이 논의되었습니다[6]. CrewAI는 "역할 기반 협업 에이전트 오케스트레이션"에 초점을 맞추고 있으며[4], 프로덕션 LLM 오케스트레이션 도구로 LangGraph와 함께 언급되었습니다[8].</p>
+<p><strong>선택 기준</strong>: </p>
+<ul>
+<li>역할 기반 협업 에이전트와 빠른 반복 개발이 필요하면 CrewAI를 고려하세요(릴리스 주기 1일, 더 큰 커뮤니티)[2][4].</li>
+<li>상태 관리가 중요한 복잡한 멀티 액터 시스템이나 LangChain 생태계 통합이 필요하면 LangGraph를 고려하세요(langchain-ai 조직 소속)[1][3].</li>
+<li>두 프레임워크 모두 MIT 라이선스로 상용 사용이 가능하며, Python 3.10 이상을 요구합니다[1][2][3][4].</li>
+</ul>
+<h3>주의할 점</h3>
+<ul>
+<li>오픈 이슈+PR 수는 저장소 규모와 사용자 기반에 따라 달라지므로, 단독으로 품질 지표로 해석하기 어렵습니다.</li>
+<li>릴리스 주기가 짧다고 반드시 안정성이 높거나 낮은 것은 아니며, 개발 철학과 버전 관리 전략의 차이일 수 있습니다.</li>
+<li>Hacker News 검색 결과는 제한적이며(LangGraph 3건, CrewAI 2건 언급), 전체 개발자 커뮤니티 평가를 대표하지 않습니다.</li>
+<li>PyPI 다운로드 수 데이터가 근거에 포함되지 않아 실제 사용량 비교는 확인되지 않았습니다.</li>
+<li>두 프레임워크의 구체적인 기능 차이, 성능 벤치마크, 학습 곡선 비교는 근거에서 확인되지 않았습니다.</li>
+<li>프로덕션 사례나 엔터프라이즈 지원 수준에 대한 구체적인 정보는 근거에 포함되지 않았습니다.</li>
+</ul>
+<h3>출처 (2026-11-26 조회)</h3>
+<ul>
+<li>[1] <a href="https://github.com/langchain-ai/langgraph">GitHub langchain-ai/langgraph</a></li>
+<li>[2] <a href="https://github.com/crewAIInc/crewAI">GitHub joaomdmoura/crewAI</a></li>
+<li>[3] <a href="https://pypi.org/project/langgraph/">PyPI langgraph</a></li>
+<li>[4] <a href="https://pypi.org/project/crewai/">PyPI crewai</a></li>
+<li>[6] <a href="https://news.ycombinator.com/item?id=46689093">Show HN: LangGraph architecture that scales (hexagonal pattern, 110 tests)</a></li>
+<li>[8] <a href="https://news.ycombinator.com/item?id=47791832">Ask HN: How are you using LLMs in production?</a></li>
+</ul></div></div>
+<p class="foot">로컬 실행 (uvicorn src.server:app) · Amazon Bedrock Claude Sonnet 4.5 · 디스크 캐시 활성 · 실제 API 응답을 그대로 렌더링</p></div>
