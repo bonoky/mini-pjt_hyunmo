@@ -1,0 +1,9 @@
+.env
+__pycache__/
+.venv/
+*.pyc
+
+# 작업 도구·백업 (제출 제외)
+*.bak
+.claude/
+.ouroboros/

@@ -1,0 +1,15 @@
+# LLM·에이전트 (수업과 동일: Amazon Bedrock)
+langchain-core>=0.3
+langchain-aws>=0.2
+langgraph>=0.2
+langsmith
+# RAG
+rank-bm25
+numpy
+# 외부 API·서버
+httpx
+fastapi
+uvicorn
+python-dotenv
+# 평가
+ragas
