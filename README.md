@@ -128,9 +128,10 @@ curl -X POST localhost:8000/query -H "Content-Type: application/json" -d '{"ques
 - 자세한 목표 대비 갭과 로드맵은 `SERVICE.md` 5·6절 참고
 
 ## 핵심 코드 위치
-- `src/agent.py:341` — 메인 에이전트 그래프 (`build_graph`) · 노드: `guard_input:116` · `planner:176` · `researcher:202` · `retrieve:242` · `writer:311` · 출처 생성 `_sources:284` · 진입점 `run_agent:364`
-- `src/tools.py` — 도메인 도구 4종 `search_papers:97` · `get_repo_stats:154` · `get_package_info:199` · `search_community:248` + 캐시·재시도 `_get:36` · 경과일 계산 `_days_since:78`
-- `src/retriever.py:80` — 하이브리드 RAG 파이프라인 (`hybrid_search`) · 병렬 임베딩 `_embed_all:28`
-- `src/guardrails.py` — 마스킹 `mask_secrets:50` · 간접 인젝션 정화 `sanitize_external:63` · 출력 검증 `verify_output:78`
+- `src/agent.py:281` — 메인 에이전트 그래프 (`build_graph`) · 노드: `guard_input:104` · `planner:154` · `researcher:167` · `retrieve:206` · `writer:251` · 출처 생성 `_sources:224` · 진입점 `run_agent:304`
+- `src/prompts.py` — LLM 프롬프트 (입력 분류기 · 플래너 · 리서처 · 작성기)
+- `src/tools.py` — 도메인 도구 4종 `search_papers:103` · `get_repo_stats:153` · `get_package_info:189` · `search_community:229` + 캐시·재시도 `_get:36` · 경과일 계산 `_days_since:84`
+- `src/retriever.py:82` — 하이브리드 RAG 파이프라인 (`hybrid_search`) · 병렬 임베딩 `_embed_all:30`
+- `src/guardrails.py` — 마스킹 `mask_secrets:61` · 간접 인젝션 정화 `scrub_external:53`·`sanitize_external:70` · 출력 검증 `verify_output:85`
 - `src/server.py:43` — `POST /query` API
-- `evaluation/run_eval.py:102` — LLM-as-Judge(`judge:54`) + RAGAS(`run_ragas:75`) 평가, 라운드 리포트 생성(`write_report:150`)
+- `evaluation/run_eval.py:106` — LLM-as-Judge(`judge:54`) + RAGAS(`run_ragas:79`) 평가, 라운드 리포트 생성(`write_report:152`)

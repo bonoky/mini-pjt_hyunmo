@@ -24,6 +24,8 @@ EMBED_WORKERS = 8  # [3차] Titan 임베딩은 텍스트 1건당 API 1회 → �
 # [3차] 같은 텍스트의 임베딩은 프로세스 안에서 재사용 (같은 근거·같은 확장 검색어가 반복되는 경우)
 _EMB_CACHE: dict[str, list[float]] = {}
 
+logging.getLogger("langchain_aws").setLevel(logging.CRITICAL)  # 임베딩 실패는 BM25 폴백으로 처리하므로 로그 억제
+
 
 def _embed_all(emb, texts: list[str]) -> list[list[float]]:
     missing = [t for t in dict.fromkeys(texts) if t not in _EMB_CACHE]
@@ -93,7 +95,6 @@ def hybrid_search(queries: list[str], docs: list[dict], top_k: int = 8) -> tuple
     for q in queries:
         rankings.append(list(np.argsort(-bm25.get_scores(_tokens(q)))))
 
-    logging.getLogger("langchain_aws").setLevel(logging.CRITICAL)
     try:  # 임베딩 검색 (실패 시 BM25 만으로 진행) · [3차] 청크·질의 임베딩을 한 번에 병렬 호출
         vecs = np.array(_embed_all(get_embeddings(), [c["text"] for c in chunks] + list(queries)))
         vecs /= np.linalg.norm(vecs, axis=1, keepdims=True) + 1e-9

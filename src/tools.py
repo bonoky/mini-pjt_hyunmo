@@ -75,6 +75,12 @@ def _date(s: str | None) -> str:
     return (s or "")[:10]
 
 
+def _doc(doc_id: str, source: str, kind: str, title: str, url: str, fetched_at: str, text: str) -> dict:
+    """근거 문서 한 건 (형식은 모듈 docstring 참고)."""
+    return {"doc_id": doc_id, "source": source, "kind": kind, "title": title,
+            "url": url, "fetched_at": fetched_at, "text": text}
+
+
 def _days_since(day: str | None, ref: str) -> int | None:
     """[3차] 날짜(YYYY-MM-DD…)부터 기준일(조회일)까지 경과일을 도구 안에서 숫자로 계산.
     LLM 이 날짜 차이를 직접 계산하다 틀리는 일을 없애고, 캐시 재사용 시에도 조회일 기준으로 일관되게 유지."""
@@ -103,7 +109,8 @@ def search_papers(query: str, max_results: int = 5, sort: str = "recent"):
         sort: "recent" (최신순) 또는 "relevance" (관련도순)
     """
     max_results = max(1, min(int(max_results), 10))
-    terms = " AND ".join(f'all:"{t}"' if " " in t else f"all:{t}" for t in [query.strip()])
+    q = query.strip()
+    terms = f'all:"{q}"' if " " in q else f"all:{q}"
     params = {
         "search_query": terms,
         "start": 0,
@@ -122,16 +129,8 @@ def search_papers(query: str, max_results: int = 5, sort: str = "recent"):
         title = " ".join(entry.findtext("a:title", default="", namespaces=ATOM).split())
         summary = " ".join(entry.findtext("a:summary", default="", namespaces=ATOM).split())
         published = _date(entry.findtext("a:published", default="", namespaces=ATOM))
-        doc = {
-            "doc_id": "arxiv:" + url.rsplit("/", 1)[-1],
-            "source": "arxiv",
-            "kind": "text",
-            "title": title,
-            "url": url,
-            "fetched_at": fetched_at,
-            "text": f"[논문] {title} (제출 {published})\n{summary}",
-        }
-        docs.append(doc)
+        docs.append(_doc("arxiv:" + url.rsplit("/", 1)[-1], "arxiv", "text", title, url, fetched_at,
+                         f"[논문] {title} (제출 {published})\n{summary}"))
         lines.append(f"- {title} | 제출 {published} | {url}")
     if not docs:
         return f"[search_papers] '{query}' 검색 결과 없음 (조회일 {fetched_at})", []
@@ -182,16 +181,7 @@ def get_repo_stats(repo: str):
         f"- 라이선스: {(r.get('license') or {}).get('spdx_id') or '-'} · 보관(archived): {r.get('archived')}\n"
         f"- 조회일: {fetched_at} · 출처: {url}"
     )
-    doc = {
-        "doc_id": f"github:{full}",
-        "source": "github",
-        "kind": "metric",
-        "title": f"GitHub {full}",
-        "url": url,
-        "fetched_at": fetched_at,
-        "text": text,
-    }
-    return text, [doc]
+    return text, [_doc(f"github:{full}", "github", "metric", f"GitHub {full}", url, fetched_at, text)]
 
 
 # ---------------------------------------------------------------- PyPI
@@ -231,16 +221,7 @@ def get_package_info(package: str):
         f"- 릴리스 주기: {cadence} · 전체 릴리스 수: {len(releases)}\n"
         f"- 조회일: {fetched_at} · 출처: {url}"
     )
-    doc = {
-        "doc_id": f"pypi:{info['name']}",
-        "source": "pypi",
-        "kind": "metric",
-        "title": f"PyPI {info['name']}",
-        "url": url,
-        "fetched_at": fetched_at,
-        "text": text,
-    }
-    return text, [doc]
+    return text, [_doc(f"pypi:{info['name']}", "pypi", "metric", f"PyPI {info['name']}", url, fetched_at, text)]
 
 
 # ---------------------------------------------------------------- Hacker News
@@ -275,15 +256,8 @@ def search_community(query: str, days: int = 365):
             except Exception:  # noqa: BLE001
                 pass
         story = _strip_html(h.get("story_text"))[:800]
-        docs.append({
-            "doc_id": f"hn:{h['objectID']}",
-            "source": "hackernews",
-            "kind": "text",
-            "title": title,
-            "url": hn_url,
-            "fetched_at": fetched_at,
-            "text": "\n".join(x for x in [head, story, *comments] if x),
-        })
+        docs.append(_doc(f"hn:{h['objectID']}", "hackernews", "text", title, hn_url, fetched_at,
+                         "\n".join(x for x in [head, story, *comments] if x)))
         lines.append(f"- {title} | {h.get('points')}점 · 댓글 {h.get('num_comments')} | {_date(h.get('created_at'))} | {hn_url}")
     if not docs:
         return f"[search_community] '{query}' 최근 {days}일 글 없음 (조회일 {fetched_at})", []

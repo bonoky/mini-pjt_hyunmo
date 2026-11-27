@@ -62,6 +62,10 @@ def judge(case: dict, answer: str) -> Verdict:
     return v
 
 
+def _passed(v: Verdict, missing_tools: list[str]) -> bool:
+    return all(v.traits) and not v.forbidden_found and not missing_tools
+
+
 def _bedrock_finished(response) -> bool:
     for gens in response.generations:
         for g in gens:
@@ -109,41 +113,39 @@ def main():
     ap.add_argument("--rejudge", action="store_true", help="에이전트는 다시 돌리지 않고 저장된 results_round{N}.json 답변만 재채점")
     args = ap.parse_args()
 
+    results_path = EVAL_DIR / f"results_round{args.round}.json"
     if args.rejudge:
-        rows = json.loads((EVAL_DIR / f"results_round{args.round}.json").read_text(encoding="utf-8"))
+        rows = json.loads(results_path.read_text(encoding="utf-8"))
         for r in rows:
             v = judge(r, r["answer"])
             r["verdict"] = v.model_dump()
-            r["passed"] = all(v.traits) and not v.forbidden_found and not r["missing_tools"]
+            r["passed"] = _passed(v, r["missing_tools"])
             print(f"#{r['id']:>2} [{r['category']:<9}] {'PASS' if r['passed'] else 'FAIL'} (재채점)  {r['input'][:40]}")
-        ragas_scores = {} if args.no_ragas else run_ragas(rows)
-        (EVAL_DIR / f"results_round{args.round}.json").write_text(json.dumps(rows, ensure_ascii=False, indent=1), encoding="utf-8")
-        write_report(args.round, rows, ragas_scores)
-        return
+    else:
+        with open(EVAL_DIR / "test_queries.csv", encoding="utf-8") as f:
+            cases = list(csv.DictReader(f))
+        if args.ids:
+            want = set(args.ids.split(","))
+            cases = [c for c in cases if c["id"] in want]
 
-    cases = list(csv.DictReader(open(EVAL_DIR / "test_queries.csv", encoding="utf-8")))
-    if args.ids:
-        want = set(args.ids.split(","))
-        cases = [c for c in cases if c["id"] in want]
-
-    rows = []
-    for c in cases:
-        t0 = time.time()
-        try:
-            out = run_agent(c["input"])
-        except Exception as e:  # noqa: BLE001
-            out = {"answer": f"[ERROR] {type(e).__name__}: {e}", "contexts": [], "trace": []}
-        secs = time.time() - t0
-        called = sorted({t["step"] for t in out["trace"]})
-        missing_tools = [t for t in split(c["expected_tools"]) if t not in called]
-        v = judge(c, out["answer"])
-        passed = all(v.traits) and not v.forbidden_found and not missing_tools
-        rows.append({**c, **out, "seconds": round(secs, 1), "called": called, "missing_tools": missing_tools,
-                     "verdict": v.model_dump(), "passed": passed})
-        print(f"#{c['id']:>2} [{c['category']:<9}] {'PASS' if passed else 'FAIL'} {secs:5.1f}s  {c['input'][:40]}")
+        rows = []
+        for c in cases:
+            t0 = time.time()
+            try:
+                out = run_agent(c["input"])
+            except Exception as e:  # noqa: BLE001
+                out = {"answer": f"[ERROR] {type(e).__name__}: {e}", "contexts": [], "trace": []}
+            secs = time.time() - t0
+            called = sorted({t["step"] for t in out["trace"]})
+            missing_tools = [t for t in split(c["expected_tools"]) if t not in called]
+            v = judge(c, out["answer"])
+            passed = _passed(v, missing_tools)
+            rows.append({**c, **out, "seconds": round(secs, 1), "called": called, "missing_tools": missing_tools,
+                         "verdict": v.model_dump(), "passed": passed})
+            print(f"#{c['id']:>2} [{c['category']:<9}] {'PASS' if passed else 'FAIL'} {secs:5.1f}s  {c['input'][:40]}")
 
     ragas_scores = {} if args.no_ragas else run_ragas(rows)
-    (EVAL_DIR / f"results_round{args.round}.json").write_text(json.dumps(rows, ensure_ascii=False, indent=1), encoding="utf-8")
+    results_path.write_text(json.dumps(rows, ensure_ascii=False, indent=1), encoding="utf-8")
     write_report(args.round, rows, ragas_scores)
 
 
